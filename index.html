@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Sprout — Habit Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="alternate icon" href="favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+</head>
+<body>
+
+  <!-- ambient background orbs -->
+  <div class="orb orb-a"></div>
+  <div class="orb orb-b"></div>
+  <div class="orb orb-c"></div>
+  <div class="grain"></div>
+
+  <div class="wrap">
+
+    <!-- ================= HEADER ================= -->
+    <header class="topbar glass">
+      <div class="brand">
+        <span class="brand-mark">🌿</span>
+        <div class="brand-text">
+          <h1>Sprout</h1>
+          <p>habits that grow on you</p>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <div class="month-nav">
+          <button id="prevMonth" class="icon-btn" aria-label="Previous month">‹</button>
+          <div class="month-label">
+            <span id="monthName">July</span> <span id="yearName">2026</span>
+          </div>
+          <button id="nextMonth" class="icon-btn" aria-label="Next month">›</button>
+        </div>
+
+        <button id="menuBtn" class="icon-btn kebab-btn" aria-haspopup="true" aria-expanded="false" aria-label="More — recommended reads">⋮</button>
+      </div>
+    </header>
+
+    <!-- ================= STATS ROW ================= -->
+    <section class="stats-row">
+
+      <div class="glass ring-card">
+        <svg class="ring" viewBox="0 0 120 120" width="108" height="108">
+          <circle class="ring-track" cx="60" cy="60" r="50" />
+          <circle id="ringProgress" class="ring-fill" cx="60" cy="60" r="50" />
+        </svg>
+        <div class="ring-center">
+          <span id="ringPercent">0%</span>
+          <small>this month</small>
+        </div>
+      </div>
+
+      <div class="glass stat-card">
+        <span class="stat-icon">✅</span>
+        <div>
+          <strong id="statCompleted">0</strong>
+          <small>total completed</small>
+        </div>
+      </div>
+
+      <div class="glass stat-card">
+        <span class="stat-icon">🔥</span>
+        <div>
+          <strong id="statStreak">0</strong>
+          <small>longest streak</small>
+        </div>
+      </div>
+
+      <div class="glass stat-card">
+        <span class="stat-icon">📆</span>
+        <div>
+          <strong id="statToday">0/0</strong>
+          <small>done today</small>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ================= HEATMAP ================= -->
+    <section class="glass heatmap-card">
+      <div class="heatmap-head">
+        <span>Activity heatmap</span>
+        <span class="hint">Darker green = more habits completed</span>
+      </div>
+      <div id="heatmap" class="heatmap"></div>
+    </section>
+
+    <!-- ================= HABIT GRID (tick boxes — kept up top) ================= -->
+    <section class="glass grid-card">
+      <div id="gridScroll" class="grid-scroll">
+        <table id="habitTable" class="habit-table">
+          <thead>
+            <tr id="dayHeaderRow"></tr>
+          </thead>
+          <tbody id="habitBody"></tbody>
+        </table>
+      </div>
+      <p id="emptyState" class="empty-state" hidden>
+        No habits added yet — add one below and start tracking here 🌱
+      </p>
+    </section>
+
+    <!-- ================= JOURNALING ================= -->
+    <section class="glass journal-card">
+      <div class="journal-head">
+        <h2>📝 Journaling</h2>
+        <span id="journalSelectedLabel" class="journal-sub">Today</span>
+      </div>
+
+      <!-- tick calendar on top -->
+      <div class="journal-tick-wrap">
+        <div id="journalCalendar" class="journal-calendar"></div>
+        <p class="journal-hint">Tap a day to read or write its entry. Filled days already have one.</p>
+      </div>
+
+      <!-- entry box kept at the bottom of this section -->
+      <div class="journal-entry-wrap">
+        <textarea id="journalText" rows="5" maxlength="4000" placeholder="Write about your day…"></textarea>
+        <button id="saveJournalBtn" class="primary-btn">Save entry</button>
+      </div>
+    </section>
+
+    <!-- ================= ADD HABIT (kept at the very bottom) ================= -->
+    <section class="glass add-card">
+      <input id="habitInput" type="text" maxlength="40" placeholder="Add a new habit — e.g. 'Drink water in the morning'" />
+      <div class="emoji-pick" id="emojiPick">
+        <button class="emoji-opt active" data-emoji="🌱">🌱</button>
+        <button class="emoji-opt" data-emoji="💧">💧</button>
+        <button class="emoji-opt" data-emoji="📚">📚</button>
+        <button class="emoji-opt" data-emoji="🏃">🏃</button>
+        <button class="emoji-opt" data-emoji="🧘">🧘</button>
+        <button class="emoji-opt" data-emoji="😴">😴</button>
+        <button class="emoji-opt" data-emoji="✍️">✍️</button>
+      </div>
+      <button id="addHabitBtn" class="primary-btn">Add</button>
+    </section>
+
+    <footer class="foot-note">
+      Your data is saved right in your browser (localStorage) — no server, no account.
+    </footer>
+
+  </div>
+
+  <!-- ================= MENU MODAL (Reads + Growth & Challenges) ================= -->
+  <div id="bookModalOverlay" class="modal-overlay" hidden>
+    <div class="modal-panel glass" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head">
+        <h2 id="modalTitle">🌿 More</h2>
+        <button id="closeModalBtn" class="icon-btn" aria-label="Close">✕</button>
+      </div>
+
+      <div class="modal-tabs" role="tablist">
+        <button id="tabBtnReads" class="modal-tab active" role="tab" aria-selected="true">📚 Reads</button>
+        <button id="tabBtnGrowth" class="modal-tab" role="tab" aria-selected="false">🌱 Growth &amp; Challenges</button>
+      </div>
+
+      <!-- ---------- READS PANEL ---------- -->
+      <div id="panelReads" class="modal-panel-body">
+        <p class="modal-sub">Upload your own PDF for any title, then track how much you've read.</p>
+        <div class="book-scroll">
+          <section class="book-group">
+            <h3>🧠 Human Psychology</h3>
+            <ul id="booksHumanPsych" class="book-list"></ul>
+          </section>
+          <section class="book-group">
+            <h3>💰 Money Psychology</h3>
+            <ul id="booksMoneyPsych" class="book-list"></ul>
+          </section>
+          <section class="book-group">
+            <h3>🌱 Self-Improvement</h3>
+            <ul id="booksSelfImprovement" class="book-list"></ul>
+          </section>
+        </div>
+      </div>
+
+      <!-- ---------- GROWTH & CHALLENGES PANEL ---------- -->
+      <div id="panelGrowth" class="modal-panel-body" hidden>
+        <p class="modal-sub">Tap 📝 to journal a question, or ➕ to track a challenge as a habit.</p>
+        <div class="book-scroll">
+          <section class="prompt-group">
+            <h3>🧭 Self-Improvement Questions</h3>
+            <ul id="promptsSelfImprove" class="prompt-list"></ul>
+          </section>
+          <section class="prompt-group">
+            <h3>🌱 Growth-Relatable Questions</h3>
+            <ul id="promptsGrowth" class="prompt-list"></ul>
+          </section>
+          <section class="prompt-group">
+            <h3>💪 Challenges for a Better Physique</h3>
+            <ul id="promptsPhysical" class="prompt-list"></ul>
+          </section>
+          <section class="prompt-group">
+            <h3>🧘 Peaceful &amp; Powerful Mind</h3>
+            <ul id="promptsMind" class="prompt-list"></ul>
+          </section>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<script src="app.js"></script>
+</body>
+</html>
